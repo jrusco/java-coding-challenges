@@ -23,7 +23,6 @@ public class MergeSortedArray {
                 //find out where it should be placed
                 int insertAtIndex = findIndexForNum(num2, nums1);
                 //move the elements in the array to make space for the new number
-                //TODO: this for loop should be moved to a method
                 for (int i = m + insertAtIndex; i > insertAtIndex; i++){
                     nums1[i] = nums1[i - 1];
                 }
