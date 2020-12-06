@@ -1,19 +1,26 @@
+package com.jrusco;
+
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertFalse;
+
 import java.util.Objects;
 import java.util.Stack;
+import org.junit.Test;
 
 // https://leetcode.com/problems/valid-parentheses/
-public class ValidParentheses {
+public class ValidParenthesesTest {
 
-    public static void main(String[] args){
-        // System.out.println("string 1 should be true: " + validate("()[]{}"));
-        // System.out.println("string 2 should be true: " + validate("({[]})"));
-        // System.out.println("string 3 should be false: " + validate("([)]"));
-        System.out.println("string 4 should be false: " + validate("("));
-        System.out.println("string 5 should be false: " + validate("(("));
-        System.out.println("string 6 should be false: " + validate(")("));
+    @Test
+    public void main(){
+        assertTrue(validate("()[]{}"));
+        assertTrue(validate("({[]})"));
+        assertFalse(validate("([)]"));
+        assertFalse(validate("("));
+        assertFalse(validate("(("));
+        assertFalse(validate(")("));
     }
 
-    public static boolean validate(String arg) {
+    public boolean validate(String arg) {
         if (Objects.isNull(arg) || arg.isEmpty()){
             return true;
         }

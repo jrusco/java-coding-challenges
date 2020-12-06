@@ -1,11 +1,19 @@
-//https://leetcode.com/problems/reverse-integer/
-public class ReverseInteger {
+package com.jrusco;
 
-    public static void main(String[] args){
-        System.out.println(reverse(-1563847412));
+import static org.junit.Assert.assertEquals;
+
+import org.junit.Test;
+//https://leetcode.com/problems/reverse-integer/
+public class ReverseIntegerTest {
+
+    @Test
+    public void test(){
+        assertEquals(21, reverse(120));
+        assertEquals(-321, reverse(-123));
+        assertEquals(0, reverse(0));
     }
 
-    public static int reverse(int x) {
+    public int reverse(int x) {
         boolean isNegative = x < 0;
         if (isNegative) x *= -1;
         long reversedX = 0;

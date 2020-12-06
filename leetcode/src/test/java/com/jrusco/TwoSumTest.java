@@ -1,13 +1,17 @@
-import java.util.Arrays;
+package com.jrusco;
 
-public class TwoSum {
+import static org.junit.Assert.assertArrayEquals;
+import org.junit.Test;
 
-    public static void main(String[] args){
-        int[] result = twoSum(new int[]{2,5,5,11}, 10);
-        Arrays.stream(result).forEach(n -> System.out.println(n));
+//https://leetcode.com/problems/two-sum/
+public class TwoSumTest {
+
+    @Test
+    public void test(){
+        assertArrayEquals(new int[]{1,2}, twoSum(new int[]{2,5,5,11}, 10));
     }
 
-    public static int[] twoSum(int[] nums, int target) {
+    public int[] twoSum(int[] nums, int target) {
         if (nums.length == 2) return new int[]{0, 1};
         int i = 0;
         while(i <= nums.length - 2){
