@@ -59,4 +59,23 @@ public class RemoveElementTest {
         }
         return nums.length - numsRemoved;
     }
+
+    /**
+    * This solution is not correct if we consider what's asked in the problem description:
+    * > you must do this by modifying the input array in-place with O(1) extra memory.
+    * > The order of elements can be changed. It doesn't matter what you leave beyond the new length.
+    * 
+    * Because it'll return the right new length, but it won't include all the right values in the new length and
+    * it'll also leave the last item in the array as it is (even if == val)
+    */
+    public int proposedRemoveElement(int[] nums, int val){
+        int index = 0;
+        for (int i : nums) {
+            if (i != val){
+                nums[index++] = i;
+            }
+        }
+        System.out.println(nums);
+        return index;
+    }
 }
