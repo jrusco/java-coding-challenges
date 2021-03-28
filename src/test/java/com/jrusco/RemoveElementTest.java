@@ -75,7 +75,6 @@ public class RemoveElementTest {
                 nums[index++] = i;
             }
         }
-        System.out.println(nums);
         return index;
     }
 }
