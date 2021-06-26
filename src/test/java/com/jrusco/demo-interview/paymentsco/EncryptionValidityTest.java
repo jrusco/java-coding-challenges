@@ -1,9 +1,5 @@
-package com.jrusco.PaymentProcessingCo;
-
 import static org.junit.Assert.assertTrue;
-
 import java.util.Arrays;
-
 import org.junit.Test;
 
 public class EncryptionValidityTest {

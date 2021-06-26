@@ -1,8 +1,7 @@
-package com.jrusco;
+package com.jrusco.leetcode;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-
 import org.junit.Test;
 
 //https://leetcode.com/problems/power-of-two/
