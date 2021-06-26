@@ -1,4 +1,4 @@
-package com.jrusco;
+package com.jrusco.leetcode;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;

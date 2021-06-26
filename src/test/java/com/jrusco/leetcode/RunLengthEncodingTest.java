@@ -1,7 +1,6 @@
-package com.jrusco;
+package com.jrusco.leetcode;
 
 import static org.junit.Assert.assertEquals;
-
 import org.junit.Test;
 
 //https://www.youtube.com/watch?v=mjZpZ_wcYFg
