@@ -1,5 +1,5 @@
 {
-	"name": "Juan Java env",
+	"name": "Java Challenges",
 	"build": {
 		"dockerfile": "Dockerfile",
 		"args": {
