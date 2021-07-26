@@ -16,3 +16,7 @@
 
 * Identify the portions of the array ("subproblems") that'd have to be swapped in order to come up with the right response. In this scenario, we can always say that the result can always be obtained by moving subarray `nums[k to n]` before `nums[0 to k-1]`.
 * If I can figure out, beforehand, what's the final position the items should be at to have a correct response, then I don't need to cycle `k` times through the array to move them into place. In addition, identifying a bottom-up approach will make the solution easier and leaner.
+
+### BalancedStringsTest
+
+* As only two possible values exist for characters, `R` and `L`, the easiest way to compare them is to assign them possitive and negative values while traversing the char array. This makes the comparison a lot simpler and more performant than asserting the literal values themselves.
