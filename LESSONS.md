@@ -20,3 +20,7 @@
 ### BalancedStringsTest
 
 * As only two possible values exist for characters, `R` and `L`, the easiest way to compare them is to assign them possitive and negative values while traversing the char array. This makes the comparison a lot simpler and more performant than asserting the literal values themselves.
+
+### AddStringsTest
+
+* When dealing with digit that are in variables of type `char`, doing math operations such as `-` or `+` will treat them as the `int` value representing their position in the ASCII table. I.e. you can use this to convert from `String`, `char` to `int` by doing `'5' - '0'` (will return an int value of `5`)
