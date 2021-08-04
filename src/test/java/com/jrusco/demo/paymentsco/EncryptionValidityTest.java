@@ -1,3 +1,5 @@
+package com.jrusco.demo.paymentsco;
+
 import static org.junit.Assert.assertTrue;
 import java.util.Arrays;
 import org.junit.Test;
