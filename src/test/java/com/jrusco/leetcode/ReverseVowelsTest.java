@@ -14,6 +14,8 @@ public class ReverseVowelsTest {
     @Test
     public void test(){
         assertEquals("holle", reverseVowels("hello"));
+        assertEquals("aA", reverseVowels("Aa"));
+        assertEquals("qwerty", reverseVowels("qwerty"));
     }
 
     public String reverseVowels(String s) {
