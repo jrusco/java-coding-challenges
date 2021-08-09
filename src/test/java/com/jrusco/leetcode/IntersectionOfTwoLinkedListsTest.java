@@ -3,7 +3,6 @@ package com.jrusco.leetcode;
 import static org.junit.Assert.assertEquals;
 
 import java.util.HashSet;
-import java.util.LinkedHashSet;
 import java.util.Set;
 
 import org.junit.Test;
