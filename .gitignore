@@ -5,4 +5,4 @@
 # IntelliJ files
 .idea
 leet-code.iml
-/test/java/com/jrusco/broker/*
+src/test/java/com/jrusco/demo/broker/*
