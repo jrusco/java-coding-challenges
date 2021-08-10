@@ -18,6 +18,10 @@ public class ValidMountainArrayTest {
         assertFalse(validMountainArray(new int[]{9,8,7,6,5,4,3,2,1,0}));
     }
 
+
+    //TODO: implementation can be improved by asserting there are INDEXES where values stop increasing and start decreasing.
+    //If values dont increase, it can be determined from the get go that's not a "mountain array".
+    //Same for increasing values that never decrease. If the index where these changes happens cannot be determined, then arr is invalid.
     public boolean validMountainArray(int[] arr) {
         if (arr.length < 3){
             return false;
