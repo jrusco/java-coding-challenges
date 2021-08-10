@@ -28,3 +28,14 @@
 ### RangeSumBstTest
 
 * DFS can be implemented iteratively by storing objects in a `Stack` or `Queue`
+
+### ValidMountainArrayTest
+
+* In excersices like this, the actual value of the items aren't the key to solve the problem, but the value **changes** are.
+* An efficient way of solving this challenge could involve trying to find the index where the array reaches it highest value before starting to decrease.
+* if `i==0` or `i==arr.lenght -1` then is not a valid mountain array because either is starting with the highes value, or is only increasing it, or there are values that are equal (which is a constraint in this case). 
+
+### MergeTwoSortedListsTest
+
+* A Linked list composed of a custom class such as `ListNode` calls for storing a reference the list head (its first item) so it is possible to return the whole list later.
+* Iterating over the linked list with `node.next` seems counterintuitive as each `node` is overwritten by its next value. But by having a pointer to the very first node of the list, I'm able to return it in its enterity after having built it from merging `l1` and `l2`.
