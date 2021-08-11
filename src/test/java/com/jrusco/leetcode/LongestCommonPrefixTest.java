@@ -40,7 +40,7 @@ public class LongestCommonPrefixTest {
             for (int i = 1; i < strs.length; i++) {
                 //if there are not enough letters in that other word,
                 //or that other word has a different letter in the same position as the first word
-                if (strs[i].length() < indexInString || strs[i].charAt(indexInString) != s){
+                if (strs[i].length() -1 < indexInString || strs[i].charAt(indexInString) != s){
                     //return the common prefix gotten so far
                     return commonPrefix;
                 }
