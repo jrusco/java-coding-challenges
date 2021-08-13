@@ -19,7 +19,7 @@ public class BinaryTreePathsTest {
         new TreeNode(2, new TreeNode(), new TreeNode(5)), 
         //right
         new TreeNode(3));
-        assertEquals(Arrays.asList("1->2->5","1->3"), tree);
+        assertEquals(Arrays.asList("1->2->5","1->3"), binaryTreePaths(tree));
     }
 
     public List<String> binaryTreePaths(TreeNode root) {
