@@ -1,3 +1,12 @@
+# Approach to solving Leetcode challenges
+
+1. Start with the top 100 liked Qs
+2. Focus on Qs by topic. Don't tackle Qs at random.
+3. Order the Qs from highest to lowest acceptance rate.
+4. Learn from the solutions. Don't be afraid to peek at the proposed solutions. Make notes from what you learned in each exercise, and dont spend more than 45 mins in a single challenge. If stuck, move on and come back later.
+5. Revisit the problems. You probably will forget how to solve some problems after a week, so make sure to study them periodically.
+6. Optional: Try company-specific challenge lists (paid feature) once you get the hang of the different kinds of problems and before feeling ready to apply to any of those companies.
+
 # What did I learn from each exercise
 
 ### RemoveElementTest
