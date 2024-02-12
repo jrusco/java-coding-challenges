@@ -7,6 +7,26 @@
 5. Revisit the problems. You probably will forget how to solve some problems after a week, so make sure to study them periodically.
 6. Optional: Try company-specific challenge lists (paid feature) once you get the hang of the different kinds of problems and before feeling ready to apply to any of those companies.
 
+## Suggested topic order
+In order of importance, relevance and frequency
+
+* String
+* Two pointers
+* Sliding window
+* Binary Search
+* Recursion 
+* Binary Tree
+* Backtracking
+* DFS
+* BFS
+* Graph
+* Linked List
+* Sort
+* Trie
+* Stack/Queue
+* Priority Queue
+* Dynamic Programming
+
 # What did I learn from each exercise
 
 ### RemoveElementTest
