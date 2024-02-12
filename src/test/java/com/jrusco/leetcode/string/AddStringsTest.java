@@ -1,4 +1,4 @@
-package com.jrusco.leetcode;
+package com.jrusco.leetcode.string;
 
 
 import static org.junit.Assert.assertEquals;
