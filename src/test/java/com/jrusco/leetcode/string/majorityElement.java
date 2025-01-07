@@ -16,6 +16,9 @@ public class majorityElement {
         int[] nums2 = {2,2,1,1,1,2,2};
         assertEquals(2, majorityElement(nums2));
 
+        // Test case 3: Example from problem submission
+        assertEquals(5, majorityElement(new int[]{6,5,5}));
+
         // Edge case: Single element
         int[] nums3 = {1};
         assertEquals(1, majorityElement(nums3));
@@ -42,7 +45,7 @@ public class majorityElement {
 
         int e = nums[0];
         int count = 0;
-        for (int i = 0; i < nums.length / 2; i++) {
+        for (int i = 0; i < nums.length; i++) {
             if(nums[i] == e){
                 count++;
             } else {
