@@ -4,7 +4,7 @@ import static org.junit.Assert.assertEquals;
 import org.junit.Test;
 
 //https://leetcode.com/problems/majority-element
-public class majorityElement {
+public class MajorityElementTest {
     
     @Test
     public void test() {
