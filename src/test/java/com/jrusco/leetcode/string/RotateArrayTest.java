@@ -1,6 +1,5 @@
 package com.jrusco.leetcode.string;
 
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertArrayEquals;
 import org.junit.Test;
 
