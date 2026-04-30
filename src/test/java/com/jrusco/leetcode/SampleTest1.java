@@ -1,6 +1,6 @@
 package com.jrusco.leetcode;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
@@ -8,11 +8,11 @@ public class SampleTest1 {
     
     @Test
     public void test(){
-        assertTrue(methodUnderTest(1));
+        assertEquals(1, methodUnderTest(1));
     }
 
-    private boolean methodUnderTest(int input) {
-        return input == 1;
+    private int methodUnderTest(int input) {
+        return 1;
     }
 
     
