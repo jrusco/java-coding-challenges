@@ -1,4 +1,4 @@
-package com.jrusco.demo.silver.silver10mediumset;
+package com.jrusco;
 
 import static org.junit.Assert.assertEquals;
 
