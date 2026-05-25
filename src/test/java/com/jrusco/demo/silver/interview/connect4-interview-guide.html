@@ -1,0 +1,751 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Connect4Array — Interview Guide</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=IBM+Plex+Mono:ital,wght@0,400;0,500;0,600;1,400&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0b0d14;
+      --surface: #131520;
+      --border: #1e2235;
+      --text: #c8cde0;
+      --muted: #5a607a;
+      --dim: #252840;
+      --u: #f0a45d;
+      --m: #4dd9c0;
+      --p: #6dcc6d;
+      --i: #6699ff;
+      --r: #bf7fff;
+      --e: #ff6b6b;
+      --kw: #e06c75;
+      --ty: #e5c07b;
+      --fn: #61afef;
+      --num: #d19a66;
+      --cm: #4a5870;
+      --op: #abb2bf;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 16px;
+      line-height: 1.7;
+    }
+
+    /* ── PROGRESS BAR ── */
+    #progress-bar {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      background: rgba(11,13,20,0.88);
+      backdrop-filter: blur(14px);
+      border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: center;
+      gap: 4px; padding: 10px 24px;
+    }
+    .pp {
+      display: flex; align-items: center; gap: 6px;
+      padding: 5px 13px; border-radius: 20px;
+      border: 1px solid transparent; cursor: pointer;
+      text-decoration: none; transition: all 0.2s;
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 11px; color: var(--muted); letter-spacing: 0.06em;
+    }
+    .pp:hover { color: var(--text); border-color: var(--border); }
+    .pd { width: 7px; height: 7px; border-radius: 50%; background: var(--dim); transition: all 0.25s; }
+    .pp.active { color: var(--text); }
+    .pp[data-p="U"].active .pd { background: var(--u); box-shadow: 0 0 8px var(--u); }
+    .pp[data-p="M"].active .pd { background: var(--m); box-shadow: 0 0 8px var(--m); }
+    .pp[data-p="P"].active .pd { background: var(--p); box-shadow: 0 0 8px var(--p); }
+    .pp[data-p="I"].active .pd { background: var(--i); box-shadow: 0 0 8px var(--i); }
+    .pp[data-p="R"].active .pd { background: var(--r); box-shadow: 0 0 8px var(--r); }
+    .pp[data-p="E"].active .pd { background: var(--e); box-shadow: 0 0 8px var(--e); }
+
+    /* ── LAYOUT ── */
+    .wrap { max-width: 860px; margin: 0 auto; padding: 0 36px; }
+
+    /* ── HERO ── */
+    .hero { padding: 96px 0 60px; border-bottom: 1px solid var(--border); }
+    .hero-eye {
+      font-family: 'IBM Plex Mono', monospace; font-size: 10px;
+      letter-spacing: 0.2em; text-transform: uppercase; color: var(--muted); margin-bottom: 18px;
+    }
+    .hero h1 {
+      font-family: 'Syne', sans-serif; font-size: 56px; font-weight: 800;
+      line-height: 1.05; color: #fff; margin-bottom: 10px;
+    }
+    .hero h1 em { color: var(--i); font-style: normal; }
+    .hero-sub { font-size: 17px; color: var(--muted); font-weight: 300; }
+
+    /* ── PHASE SECTIONS ── */
+    .phase { padding: 80px 0; border-bottom: 1px solid var(--border); }
+    .ph-head { display: flex; align-items: flex-start; gap: 18px; margin-bottom: 40px; }
+    .ph-letter {
+      font-family: 'Syne', sans-serif; font-size: 88px; font-weight: 800;
+      line-height: 0.82; opacity: 0.1; flex-shrink: 0; margin-top: -6px; user-select: none;
+    }
+    .ph-meta { flex: 1; }
+    .ph-tag {
+      font-family: 'IBM Plex Mono', monospace; font-size: 10px;
+      letter-spacing: 0.18em; text-transform: uppercase; margin-bottom: 4px;
+    }
+    .ph-title {
+      font-family: 'Syne', sans-serif; font-size: 26px; font-weight: 700;
+      color: #fff; display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+    }
+    .tc {
+      font-family: 'IBM Plex Mono', monospace; font-size: 10px; font-weight: 400;
+      padding: 3px 10px; border-radius: 12px; white-space: nowrap;
+    }
+    .ph-desc { font-size: 13.5px; color: var(--muted); margin-top: 5px; }
+
+    /* Phase colours */
+    .pu .ph-letter { color: var(--u); } .pu .ph-tag { color: var(--u); }
+    .pu .tc { background: rgba(240,164,93,.1); color: var(--u); border: 1px solid rgba(240,164,93,.25); }
+    .pm .ph-letter { color: var(--m); } .pm .ph-tag { color: var(--m); }
+    .pm .tc { background: rgba(77,217,192,.1); color: var(--m); border: 1px solid rgba(77,217,192,.25); }
+    .pp2 .ph-letter { color: var(--p); } .pp2 .ph-tag { color: var(--p); }
+    .pp2 .tc { background: rgba(109,204,109,.1); color: var(--p); border: 1px solid rgba(109,204,109,.25); }
+    .pi .ph-letter { color: var(--i); } .pi .ph-tag { color: var(--i); }
+    .pi .tc { background: rgba(102,153,255,.1); color: var(--i); border: 1px solid rgba(102,153,255,.25); }
+    .pr .ph-letter { color: var(--r); } .pr .ph-tag { color: var(--r); }
+    .pr .tc { background: rgba(191,127,255,.1); color: var(--r); border: 1px solid rgba(191,127,255,.25); }
+    .pe .ph-letter { color: var(--e); } .pe .ph-tag { color: var(--e); }
+    .pe .tc { background: rgba(255,107,107,.1); color: var(--e); border: 1px solid rgba(255,107,107,.25); }
+
+    /* ── BLOCK LABEL (kept instances only) ── */
+    .blk-label {
+      font-family: 'IBM Plex Mono', monospace; font-size: 9.5px;
+      letter-spacing: 0.16em; text-transform: uppercase; color: var(--muted);
+      margin-bottom: 8px; margin-top: 28px;
+    }
+
+    /* Problem card */
+    .prob {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 8px; padding: 18px 22px; font-size: 15px; line-height: 1.85;
+      margin-bottom: 22px;
+    }
+    .prob code { font-family: 'IBM Plex Mono', monospace; font-size: 13px; }
+
+    /* Say-this block */
+    .say {
+      border-left: 3px solid; border-radius: 0 8px 8px 0;
+      padding: 14px 18px; font-style: italic; font-size: 17px; line-height: 1.75;
+      margin-bottom: 22px;
+    }
+    .say-lbl {
+      display: block; font-family: 'IBM Plex Mono', monospace;
+      font-size: 9px; letter-spacing: 0.14em; text-transform: uppercase;
+      opacity: 0.65; margin-bottom: 6px; font-style: normal;
+    }
+    .pu .say { background: rgba(240,164,93,.05); border-color: var(--u); color: #f0d8b0; }
+    .pm .say { background: rgba(77,217,192,.05);  border-color: var(--m); color: #b8ede5; }
+    .pp2 .say{ background: rgba(109,204,109,.05); border-color: var(--p); color: #c4ecb8; }
+    .pi .say { background: rgba(102,153,255,.05); border-color: var(--i); color: #b8c8f0; }
+    .pr .say { background: rgba(191,127,255,.05); border-color: var(--r); color: #dcc8f8; }
+    .pe .say { background: rgba(255,107,107,.05); border-color: var(--e); color: #f8cccc; }
+
+    /* Q&A bullet list */
+    .qa-list { list-style: none; display: flex; flex-direction: column; gap: 10px; padding: 0; margin-bottom: 22px; }
+    .qa-list li { font-size: 15px; color: var(--text); line-height: 1.6; }
+    .qa-list li strong { color: #fff; margin-right: 6px; }
+    .qa-list code { font-family: 'IBM Plex Mono', monospace; font-size: 13px; color: var(--i); }
+
+    /* Data structure bullet list */
+    .ds-list { list-style: none; padding: 0; display: flex; flex-direction: column; gap: 10px; margin-bottom: 22px; }
+    .ds-list li { font-size: 15px; color: var(--text); }
+    .ds-list code { font-family: 'IBM Plex Mono', monospace; color: var(--fn); font-size: 13px; }
+
+    /* Pattern tags */
+    .ptags { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 22px; }
+    .ptag {
+      font-family: 'IBM Plex Mono', monospace; font-size: 12px;
+      padding: 6px 12px; border-radius: 4px;
+      border: 1px solid var(--border); background: var(--surface); color: var(--text);
+    }
+
+    /* Sub-problem cards */
+    .sp-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 22px; }
+    .sp-card { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 16px 18px; }
+    .sp-num { font-family: 'IBM Plex Mono', monospace; font-size: 9.5px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin-bottom: 5px; }
+    .sp-title { font-size: 14.5px; font-weight: 500; color: #fff; margin-bottom: 7px; }
+    .sp-desc { font-size: 13px; color: var(--muted); line-height: 1.65; }
+
+    /* Complexity grid */
+    .cx-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 22px; }
+    .cx-card { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 16px 20px; }
+    .cx-lbl { font-family: 'IBM Plex Mono', monospace; font-size: 9.5px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); margin-bottom: 5px; }
+    .cx-val { font-family: 'IBM Plex Mono', monospace; font-size: 24px; font-weight: 600; color: #fff; margin-bottom: 4px; }
+    .cx-note { font-size: 12px; color: var(--muted); }
+
+    /* Code blocks */
+    .code-wrap { margin-bottom: 22px; }
+    .code-chrome { background: #090c13; border: 1px solid var(--border); border-radius: 8px; overflow: hidden; }
+    .code-head {
+      display: flex; align-items: center; gap: 8px;
+      padding: 9px 13px; border-bottom: 1px solid var(--border); background: #070a10;
+    }
+    .dots { display: flex; gap: 5px; }
+    .dot { width: 10px; height: 10px; border-radius: 50%; }
+    .dr { background: #3a1f1f; } .dy { background: #3a2e18; } .dg { background: #1a3018; }
+    .code-name { font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: var(--muted); flex: 1; text-align: center; }
+    .code-body { padding: 18px 22px; overflow-x: auto; }
+    pre {
+      font-family: 'IBM Plex Mono', monospace; font-size: 13px;
+      line-height: 1.8; color: #abb2bf; white-space: pre;
+    }
+    .kw { color: #e06c75; }
+    .ty { color: #e5c07b; }
+    .fn { color: #61afef; }
+    .nu { color: #d19a66; }
+    .cm { color: #4a5870; font-style: italic; }
+
+    /* Narration panel under code */
+    .narr {
+      background: rgba(102,153,255,.04); border: 1px solid rgba(102,153,255,.1);
+      border-top: none; border-radius: 0 0 8px 8px;
+      padding: 11px 18px; font-size: 13.5px; color: #7a8baa; line-height: 1.6;
+    }
+    .narr strong { color: #9aaac8; }
+
+    /* Step header inside Implement */
+    .step-h { display: flex; align-items: center; gap: 12px; margin: 30px 0 12px; }
+    .step-h:first-child { margin-top: 0; }
+    .step-n {
+      width: 23px; height: 23px; border-radius: 50%; background: var(--i);
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'IBM Plex Mono', monospace; font-size: 11px; font-weight: 600;
+      color: #fff; flex-shrink: 0;
+    }
+    .step-t { font-size: 14.5px; font-weight: 500; color: var(--text); }
+    .step-t code { font-family: 'IBM Plex Mono', monospace; font-size: 13px; color: var(--fn); }
+
+    /* Tip box */
+    .tip {
+      background: var(--surface); border: 1px solid var(--border); border-radius: 8px;
+      padding: 13px 16px; display: flex; align-items: flex-start; gap: 12px;
+    }
+    .tip-ico { font-size: 15px; flex-shrink: 0; margin-top: 1px; }
+    .tip-txt { font-size: 13.5px; color: var(--text); line-height: 1.65; }
+    .tip-txt strong { color: #fff; font-weight: 500; }
+
+    /* Signal box */
+    .sig { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 15px 18px; }
+    .sig-hd {
+      font-family: 'IBM Plex Mono', monospace; font-size: 9.5px;
+      letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted);
+      margin-bottom: 8px;
+    }
+    .sig-hd::before { content: "👁  "; }
+    .sig p { font-size: 13.5px; color: var(--text); font-style: italic; line-height: 1.7; }
+
+    /* Collapsible notes */
+    .notes { margin-top: 28px; }
+    .notes summary {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase;
+      color: var(--muted); cursor: pointer; list-style: none;
+      display: inline-flex; align-items: center; gap: 6px;
+    }
+    .notes summary::-webkit-details-marker { display: none; }
+    .notes summary::before { content: "▸"; transition: transform 0.15s; }
+    .notes[open] summary::before { transform: rotate(90deg); }
+    .notes-body { padding-top: 16px; display: flex; flex-direction: column; gap: 12px; }
+
+    /* Trace block */
+    .trace {
+      background: #07090f; border: 1px solid var(--border); border-radius: 8px;
+      padding: 18px 22px; font-family: 'IBM Plex Mono', monospace;
+      font-size: 12px; line-height: 2.1; color: var(--muted); overflow-x: auto;
+      margin-bottom: 22px;
+    }
+    .t-step { color: #8899bb; }
+    .t-p1 { color: var(--i); }
+    .t-p2 { color: var(--e); }
+    .t-win { color: var(--p); font-weight: 600; }
+    .t-cm { color: var(--cm); font-style: italic; }
+
+    /* Edge case card */
+    .edge {
+      background: var(--surface); border: 1px solid var(--border); border-radius: 8px;
+      padding: 14px 18px; font-size: 14px; line-height: 1.7; margin-bottom: 22px;
+    }
+    .edge strong { color: #fff; }
+    .edge code { font-family: 'IBM Plex Mono', monospace; font-size: 13px; color: var(--r); }
+
+    /* Footer */
+    footer {
+      padding: 44px 0; text-align: center;
+      font-family: 'IBM Plex Mono', monospace; font-size: 10px;
+      color: var(--muted); letter-spacing: 0.08em;
+    }
+  </style>
+</head>
+<body>
+
+<!-- PROGRESS BAR -->
+<nav id="progress-bar">
+  <a href="#pu" class="pp" data-p="U"><div class="pd"></div>Understand</a>
+  <a href="#pm" class="pp" data-p="M"><div class="pd"></div>Match</a>
+  <a href="#pp" class="pp" data-p="P"><div class="pd"></div>Plan</a>
+  <a href="#pi" class="pp" data-p="I"><div class="pd"></div>Implement</a>
+  <a href="#pr" class="pp" data-p="R"><div class="pd"></div>Review</a>
+  <a href="#pe" class="pp" data-p="E"><div class="pd"></div>Evaluate</a>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="wrap">
+    <div class="hero-eye">Live Coding Interview Guide</div>
+    <h1>Connect4<em>Array</em></h1>
+    <div class="hero-sub">7×6 board · Moves array input · Detect 4-in-a-row · Return winner</div>
+  </div>
+</section>
+
+<!-- ═══ U — UNDERSTAND ═══ -->
+<section class="phase pu" id="pu">
+  <div class="wrap">
+    <div class="ph-head">
+      <div class="ph-letter">U</div>
+      <div class="ph-meta">
+        <div class="ph-tag">Phase 1 — Understand</div>
+        <div class="ph-title">Read &amp; Constrain the Problem <span class="tc">⏱ ~3 min</span></div>
+        <div class="ph-desc">Read the problem out loud. Ask every clarifying question. Don't touch the keyboard yet.</div>
+      </div>
+    </div>
+
+    <div class="prob">
+      A 7×6 Connect4 board. You receive an array of moves where each value is a column number.
+      Players alternate: even-index moves belong to Player 1, odd-index to Player 2.
+      Return <code style="color:var(--i)">1</code> if P1 wins,
+      <code style="color:var(--e)">2</code> if P2 wins,
+      <code style="color:var(--muted)">0</code> if no winner.
+      A win is 4 consecutive discs in a row, column, or diagonal.
+    </div>
+
+    <div class="say">
+      <span class="say-lbl">🎙 narrate</span>
+      "OK so we have a classic Connect 4 board — 7 columns, 6 rows."
+    </div>
+
+    <ul class="qa-list">
+      <li><strong>Board dimensions?</strong> 7 cols × 6 rows — Java matrix is <code>int[6][7]</code> (rows first)</li>
+      <li><strong>Return values?</strong> 0 = no winner, 1 = P1, 2 = P2</li>
+      <li><strong>Diagonals count?</strong> Yes — horizontal, vertical, both diagonals</li>
+      <li><strong>Column overflow?</strong> Assume valid input</li>
+      <li><strong>Check both players?</strong> Only the player who just placed — a win can only be triggered by the last disc</li>
+    </ul>
+
+    <details class="notes">
+      <summary>Notes</summary>
+      <div class="notes-body">
+        <div class="tip">
+          <div class="tip-ico">✋</div>
+          <div class="tip-txt"><strong>Keep your hands off the keyboard during this entire phase.</strong> Pause visibly after reading. Every second here saves three minutes in the Implement phase. Asking clarifying questions — even when you know the answers — demonstrates systematic thinking.</div>
+        </div>
+        <div class="sig">
+          <div class="sig-hd">Interviewer signal</div>
+          <p>"Are you listening carefully and constraining the problem before writing code? Candidates who ask no questions either already know the problem or are too nervous to slow down. Question-asking — even self-directed — signals a systematic engineer."</p>
+        </div>
+      </div>
+    </details>
+  </div>
+</section>
+
+<!-- ═══ M — MATCH ═══ -->
+<section class="phase pm" id="pm">
+  <div class="wrap">
+    <div class="ph-head">
+      <div class="ph-letter">M</div>
+      <div class="ph-meta">
+        <div class="ph-tag">Phase 2 — Match</div>
+        <div class="ph-title">Identify the Pattern <span class="tc">⏱ ~1.5 min</span></div>
+        <div class="ph-desc">Name the problem type. Choose your data structures and justify them before planning the algorithm.</div>
+      </div>
+    </div>
+
+    <div class="ptags">
+      <span class="ptag">2D Grid Simulation</span>
+      <span class="ptag">Directional Traversal</span>
+      <span class="ptag">Early Termination</span>
+    </div>
+
+    <ul class="ds-list">
+      <li><code>int[][] board</code> — 6×7 grid, 0 = empty, 1 = P1, 2 = P2</li>
+      <li><code>int[] heights</code> — next free row per column → O(1) placement vs O(rows) scanning</li>
+    </ul>
+
+    <div class="say">
+      <span class="say-lbl">🎙 narrate</span>
+      "This is a 2D grid simulation with directional traversal."
+    </div>
+
+    <details class="notes">
+      <summary>Notes</summary>
+      <div class="notes-body">
+        <div class="sig">
+          <div class="sig-hd">Interviewer signal</div>
+          <p>"Does the candidate have a mental library of patterns to reach for? Naming '2D grid + directional traversal' signals fluency. Independently proposing the heights array signals experience — it's not in the problem statement, it comes from reasoning about cost."</p>
+        </div>
+      </div>
+    </details>
+  </div>
+</section>
+
+<!-- ═══ P — PLAN ═══ -->
+<section class="phase pp2" id="pp">
+  <div class="wrap">
+    <div class="ph-head">
+      <div class="ph-letter">P</div>
+      <div class="ph-meta">
+        <div class="ph-tag">Phase 3 — Plan</div>
+        <div class="ph-title">Design Before You Code <span class="tc">⏱ ~3 min</span></div>
+        <div class="ph-desc">Decompose the problem, state the key insight, estimate complexity upfront. Still no typing.</div>
+      </div>
+    </div>
+
+    <div class="blk-label">Two Sub-Problems</div>
+    <div class="sp-grid">
+      <div class="sp-card">
+        <div class="sp-num">Sub-problem 1</div>
+        <div class="sp-title">Build the board from the moves array</div>
+        <div class="sp-desc">Iterate through moves. Place each disc in the column at the height tracked by the heights array. Player determined by move index parity.</div>
+      </div>
+      <div class="sp-card">
+        <div class="sp-num">Sub-problem 2</div>
+        <div class="sp-title">Detect a win after each placement</div>
+        <div class="sp-desc">After each disc is placed, check only from that cell. If it causes a win, return immediately — no need to scan the full board.</div>
+      </div>
+    </div>
+
+    <div class="say">
+      <span class="say-lbl">🎙 narrate</span>
+      "The naive approach scans the full board after all moves — O(rows × cols) per check. The better approach: check for a win right after each placement, and check only from the newly placed disc outward."
+    </div>
+
+    <div class="blk-label">Complexity</div>
+    <div class="cx-grid">
+      <div class="cx-card">
+        <div class="cx-lbl">Time Complexity</div>
+        <div class="cx-val">O(n)</div>
+        <div class="cx-note">One pass through n moves. O(1) win check per move (4 axes × ≤3 steps).</div>
+      </div>
+      <div class="cx-card">
+        <div class="cx-lbl">Space Complexity</div>
+        <div class="cx-val">O(1)</div>
+        <div class="cx-note">Board is fixed 6×7. Heights is fixed 7 entries. Both constant regardless of input.</div>
+      </div>
+    </div>
+
+    <details class="notes">
+      <summary>Notes</summary>
+      <div class="notes-body">
+        <div class="tip">
+          <div class="tip-ico">🗺</div>
+          <div class="tip-txt"><strong>Narrate your full plan before typing a single character.</strong> Say: "Here's how I'm going to approach this…" and walk through both sub-problems. This gives the interviewer a chance to redirect you before you invest 8 minutes coding in the wrong direction.</div>
+        </div>
+        <div class="sig">
+          <div class="sig-hd">Interviewer signal</div>
+          <p>"Can the candidate decompose a problem and sequence the sub-problems correctly? Stating complexity before coding — not after — shows forward-thinking. The bidirectional check insight separates pattern-matchers from candidates who actually reason through the problem."</p>
+        </div>
+      </div>
+    </details>
+  </div>
+</section>
+
+<!-- ═══ I — IMPLEMENT ═══ -->
+<section class="phase pi" id="pi">
+  <div class="wrap">
+    <div class="ph-head">
+      <div class="ph-letter">I</div>
+      <div class="ph-meta">
+        <div class="ph-tag">Phase 4 — Implement</div>
+        <div class="ph-title">Code It Layer by Layer <span class="tc">⏱ ~8 min</span></div>
+        <div class="ph-desc">Write all method stubs first — then fill them in from outermost to innermost.</div>
+      </div>
+    </div>
+
+    <!-- Step 1 -->
+    <div class="step-h">
+      <div class="step-n">1</div>
+      <div class="step-t">Write all method stubs — lock in the structure before the logic</div>
+    </div>
+    <div class="code-wrap">
+      <div class="code-chrome">
+        <div class="code-head">
+          <div class="dots"><div class="dot dr"></div><div class="dot dy"></div><div class="dot dg"></div></div>
+          <div class="code-name">Connect4ArrayTest.java — skeleton</div>
+        </div>
+        <div class="code-body"><pre><span class="kw">public</span> <span class="ty">int</span> <span class="fn">connect4</span>(<span class="ty">int</span>[] moves) {
+    <span class="cm">// entry point — build board and check for wins as we go</span>
+    <span class="kw">return</span> <span class="nu">0</span>;
+}
+
+<span class="kw">private</span> <span class="ty">boolean</span> <span class="fn">checkWin</span>(<span class="ty">int</span>[][] board, <span class="ty">int</span> player, <span class="ty">int</span> row, <span class="ty">int</span> col) {
+    <span class="cm">// did the last placement create a win?</span>
+    <span class="kw">return</span> <span class="kw">false</span>;
+}
+
+<span class="kw">private</span> <span class="ty">int</span> <span class="fn">countAxis</span>(<span class="ty">int</span>[][] board, <span class="ty">int</span> player, <span class="ty">int</span> row, <span class="ty">int</span> col, <span class="ty">int</span> dr, <span class="ty">int</span> dc) {
+    <span class="cm">// total consecutive discs along a full axis (both directions)</span>
+    <span class="kw">return</span> <span class="nu">0</span>;
+}
+
+<span class="kw">private</span> <span class="ty">int</span> <span class="fn">countInDir</span>(<span class="ty">int</span>[][] board, <span class="ty">int</span> player, <span class="ty">int</span> row, <span class="ty">int</span> col, <span class="ty">int</span> dr, <span class="ty">int</span> dc) {
+    <span class="cm">// count discs in one direction until boundary or wrong player</span>
+    <span class="kw">return</span> <span class="nu">0</span>;
+}</pre></div>
+      </div>
+      <div class="narr">Writing all signatures first locks in the decomposition before any implementation detail is committed.</div>
+    </div>
+
+    <!-- Step 2 -->
+    <div class="step-h">
+      <div class="step-n">2</div>
+      <div class="step-t">Implement <code>connect4()</code> — the entry point</div>
+    </div>
+    <div class="code-wrap">
+      <div class="code-chrome">
+        <div class="code-head">
+          <div class="dots"><div class="dot dr"></div><div class="dot dy"></div><div class="dot dg"></div></div>
+          <div class="code-name">connect4()</div>
+        </div>
+        <div class="code-body"><pre><span class="kw">public</span> <span class="ty">int</span> <span class="fn">connect4</span>(<span class="ty">int</span>[] moves) {
+    <span class="ty">int</span>[][] board = <span class="kw">new</span> <span class="ty">int</span>[<span class="nu">6</span>][<span class="nu">7</span>];
+    <span class="ty">int</span>[] heights = <span class="kw">new</span> <span class="ty">int</span>[<span class="nu">7</span>];
+
+    <span class="kw">for</span> (<span class="ty">int</span> m = <span class="nu">0</span>; m &lt; moves.length; m++) {
+        <span class="ty">int</span> col = moves[m];
+        <span class="ty">int</span> row = heights[col]++;
+        <span class="ty">int</span> player = m % <span class="nu">2</span> == <span class="nu">0</span> ? <span class="nu">1</span> : <span class="nu">2</span>;
+        board[row][col] = player;
+
+        <span class="kw">if</span> (<span class="fn">checkWin</span>(board, player, row, col)) {
+            <span class="kw">return</span> player;
+        }
+    }
+    <span class="kw">return</span> <span class="nu">0</span>;
+}</pre></div>
+      </div>
+      <div class="narr"><strong>heights[col]++</strong> gives the row and pre-increments in one expression — next disc in this column lands one row higher.</div>
+    </div>
+
+    <!-- Step 3 -->
+    <div class="step-h">
+      <div class="step-n">3</div>
+      <div class="step-t">Implement <code>checkWin()</code> — 4 axes from the placed disc</div>
+    </div>
+    <div class="code-wrap">
+      <div class="code-chrome">
+        <div class="code-head">
+          <div class="dots"><div class="dot dr"></div><div class="dot dy"></div><div class="dot dg"></div></div>
+          <div class="code-name">checkWin()</div>
+        </div>
+        <div class="code-body"><pre><span class="kw">private</span> <span class="ty">boolean</span> <span class="fn">checkWin</span>(<span class="ty">int</span>[][] board, <span class="ty">int</span> player, <span class="ty">int</span> row, <span class="ty">int</span> col) {
+    <span class="kw">return</span> <span class="fn">countAxis</span>(board, player, row, col, <span class="nu">0</span>,  <span class="nu">1</span>) &gt;= <span class="nu">4</span>   <span class="cm">// horizontal</span>
+        || <span class="fn">countAxis</span>(board, player, row, col, <span class="nu">1</span>,  <span class="nu">0</span>) &gt;= <span class="nu">4</span>   <span class="cm">// vertical</span>
+        || <span class="fn">countAxis</span>(board, player, row, col, <span class="nu">1</span>,  <span class="nu">1</span>) &gt;= <span class="nu">4</span>   <span class="cm">// diagonal ↗</span>
+        || <span class="fn">countAxis</span>(board, player, row, col, <span class="nu">1</span>, -<span class="nu">1</span>) &gt;= <span class="nu">4</span>;  <span class="cm">// diagonal ↘</span>
+}</pre></div>
+      </div>
+      <div class="narr">The (dr, dc) pair encodes direction — the same pair passed negated gives the opposite direction on the same axis.</div>
+    </div>
+
+    <!-- Step 4 -->
+    <div class="step-h">
+      <div class="step-n">4</div>
+      <div class="step-t">Implement <code>countAxis()</code> — bidirectional disc count</div>
+    </div>
+    <div class="code-wrap">
+      <div class="code-chrome">
+        <div class="code-head">
+          <div class="dots"><div class="dot dr"></div><div class="dot dy"></div><div class="dot dg"></div></div>
+          <div class="code-name">countAxis()</div>
+        </div>
+        <div class="code-body"><pre><span class="kw">private</span> <span class="ty">int</span> <span class="fn">countAxis</span>(<span class="ty">int</span>[][] board, <span class="ty">int</span> player, <span class="ty">int</span> row, <span class="ty">int</span> col, <span class="ty">int</span> dr, <span class="ty">int</span> dc) {
+    <span class="kw">return</span> <span class="nu">1</span>
+        + <span class="fn">countInDir</span>(board, player, row, col,  dr,  dc)
+        + <span class="fn">countInDir</span>(board, player, row, col, -dr, -dc);
+}</pre></div>
+      </div>
+      <div class="narr">The 1 accounts for the placed disc itself; negating dr and dc is why direction vectors are cleaner than enumerating all 8 cases.</div>
+    </div>
+
+    <!-- Step 5 -->
+    <div class="step-h">
+      <div class="step-n">5</div>
+      <div class="step-t">Implement <code>countInDir()</code> — walk one direction up to 3 steps</div>
+    </div>
+    <div class="code-wrap">
+      <div class="code-chrome">
+        <div class="code-head">
+          <div class="dots"><div class="dot dr"></div><div class="dot dy"></div><div class="dot dg"></div></div>
+          <div class="code-name">countInDir()</div>
+        </div>
+        <div class="code-body"><pre><span class="kw">private</span> <span class="ty">int</span> <span class="fn">countInDir</span>(<span class="ty">int</span>[][] board, <span class="ty">int</span> player, <span class="ty">int</span> row, <span class="ty">int</span> col, <span class="ty">int</span> dr, <span class="ty">int</span> dc) {
+    <span class="ty">int</span> count = <span class="nu">0</span>;
+    <span class="kw">for</span> (<span class="ty">int</span> i = <span class="nu">1</span>; i &lt;= <span class="nu">3</span>; i++) {
+        <span class="ty">int</span> r = row + i * dr;
+        <span class="ty">int</span> c = col + i * dc;
+        <span class="kw">if</span> (r &lt; <span class="nu">0</span> || r &gt;= <span class="nu">6</span> || c &lt; <span class="nu">0</span> || c &gt;= <span class="nu">7</span> || board[r][c] != player) <span class="kw">break</span>;
+        count++;
+    }
+    <span class="kw">return</span> count;
+}</pre></div>
+      </div>
+      <div class="narr">Only 3 steps needed — countAxis already contributes 1 for the placed cell, and 1 + 3 = 4.</div>
+    </div>
+
+    <details class="notes">
+      <summary>Notes</summary>
+      <div class="notes-body">
+        <div class="tip">
+          <div class="tip-ico">🧱</div>
+          <div class="tip-txt"><strong>Write in layers — skeleton first, then outermost to innermost.</strong> This prevents getting lost in implementation details before the structure is clear. It also signals to the interviewer that you think architecturally, not line-by-line.</div>
+        </div>
+        <div class="sig">
+          <div class="sig-hd">Interviewer signal</div>
+          <p>"Is the code structured, readable, and introduced in the order the candidate planned? Short methods with single responsibilities indicate engineering maturity. Narrating every decision — even the obvious ones — shows the thought process, which is ultimately what's being evaluated."</p>
+        </div>
+      </div>
+    </details>
+  </div>
+</section>
+
+<!-- ═══ R — REVIEW ═══ -->
+<section class="phase pr" id="pr">
+  <div class="wrap">
+    <div class="ph-head">
+      <div class="ph-letter">R</div>
+      <div class="ph-meta">
+        <div class="ph-tag">Phase 5 — Review</div>
+        <div class="ph-title">Trace a Test Case Live <span class="tc">⏱ ~2 min</span></div>
+        <div class="ph-desc">Validate against a provided test case. Then cover one edge case.</div>
+      </div>
+    </div>
+
+    <div class="say">
+      <span class="say-lbl">🎙 narrate</span>
+      "Let me trace through the horizontal win case to validate: moves = {0, 0, 1, 1, 2, 2, 3}. Expected return: 1."
+    </div>
+
+    <div class="blk-label">Execution Trace — P1 Wins Horizontally</div>
+    <div class="trace"><span class="t-cm">// moves = {0, 0, 1, 1, 2, 2, 3}  →  expected: 1 (P1 wins)</span>
+
+<span class="t-step">m=0</span>  <span class="t-p1">P1</span> col=0  heights[0]: 0→1   board[0][0]=<span class="t-p1">1</span>   checkWin → no
+<span class="t-step">m=1</span>  <span class="t-p2">P2</span> col=0  heights[0]: 1→2   board[1][0]=<span class="t-p2">2</span>   checkWin → no
+<span class="t-step">m=2</span>  <span class="t-p1">P1</span> col=1  heights[1]: 0→1   board[0][1]=<span class="t-p1">1</span>   checkWin → no
+<span class="t-step">m=3</span>  <span class="t-p2">P2</span> col=1  heights[1]: 1→2   board[1][1]=<span class="t-p2">2</span>   checkWin → no
+<span class="t-step">m=4</span>  <span class="t-p1">P1</span> col=2  heights[2]: 0→1   board[0][2]=<span class="t-p1">1</span>   checkWin → no
+<span class="t-step">m=5</span>  <span class="t-p2">P2</span> col=2  heights[2]: 1→2   board[1][2]=<span class="t-p2">2</span>   checkWin → no
+<span class="t-step">m=6</span>  <span class="t-p1">P1</span> col=3  heights[3]: 0→1   board[0][3]=<span class="t-p1">1</span>   checkWin ↓
+
+  countAxis(row=0, col=3, dr=0, dc=1)  <span class="t-cm">← horizontal axis</span>
+    countInDir(+): col=4 → out of bounds  →  0
+    countInDir(−): col=2→<span class="t-p1">P1</span>✓  col=1→<span class="t-p1">P1</span>✓  col=0→<span class="t-p1">P1</span>✓  →  3
+    total = 1 + 0 + 3 = <span class="t-win">4  ✓  →  return 1</span></div>
+
+    <div class="blk-label">Edge Case</div>
+    <div class="edge">
+      <strong>Empty or very short moves array</strong> — the for loop never executes and we fall straight through to <code>return 0</code>. No special case needed. ✓
+    </div>
+
+    <details class="notes">
+      <summary>Notes</summary>
+      <div class="notes-body">
+        <div class="tip">
+          <div class="tip-ico">🔬</div>
+          <div class="tip-txt"><strong>Always start with a provided test case — not a made-up one.</strong> It shows you're validating against real requirements. After tracing, add one simple edge case of your own to show you're thinking about boundaries, not just the happy path.</div>
+        </div>
+        <div class="sig">
+          <div class="sig-hd">Interviewer signal</div>
+          <p>"Does the candidate validate their own code before claiming it works? Tracing execution manually — rather than saying 'I think it's correct' — shows engineering rigor. Catching a bug during review is far better than never looking."</p>
+        </div>
+      </div>
+    </details>
+  </div>
+</section>
+
+<!-- ═══ E — EVALUATE ═══ -->
+<section class="phase pe" id="pe">
+  <div class="wrap">
+    <div class="ph-head">
+      <div class="ph-letter">E</div>
+      <div class="ph-meta">
+        <div class="ph-tag">Phase 6 — Evaluate</div>
+        <div class="ph-title">Complexity &amp; Closing <span class="tc">⏱ ~1.5 min</span></div>
+        <div class="ph-desc">State time and space. Explain what your specific choices improved. Invite follow-up.</div>
+      </div>
+    </div>
+
+    <div class="blk-label">Complexity</div>
+    <div class="cx-grid">
+      <div class="cx-card">
+        <div class="cx-lbl">Time Complexity</div>
+        <div class="cx-val">O(n)</div>
+        <div class="cx-note">n = number of moves. One pass. O(1) win check per placement (4 axes × ≤3 steps).</div>
+      </div>
+      <div class="cx-card">
+        <div class="cx-lbl">Space Complexity</div>
+        <div class="cx-val">O(1)</div>
+        <div class="cx-note">Board is 6×7 = 42 cells. Heights is 7 entries. Both fixed regardless of input.</div>
+      </div>
+    </div>
+
+    <div class="say">
+      <span class="say-lbl">🎙 narrate</span>
+      "Two specific improvements over the naive approach: first, the heights array eliminates an O(rows) scan per placement — bringing placement from O(n × rows) down to O(n)."
+    </div>
+
+    <div class="say">
+      <span class="say-lbl">🎙 closing</span>
+      "That covers the full implementation. Happy to go deeper on any part of it — the direction vector encoding, the bidirectional counting logic, or additional edge cases."
+    </div>
+
+    <details class="notes">
+      <summary>Notes</summary>
+      <div class="notes-body">
+        <div class="tip">
+          <div class="tip-ico">📐</div>
+          <div class="tip-txt"><strong>Always state both time AND space complexity — unprompted.</strong> Most candidates only mention time. Space shows you think about the full resource profile. Ending with an open invitation for follow-up signals confidence rather than relief that it's over.</div>
+        </div>
+        <div class="sig">
+          <div class="sig-hd">Interviewer signal</div>
+          <p>"Can the candidate articulate what their specific design choices improved — not just recite a Big-O number? Ending by inviting follow-up demonstrates ownership and confidence. It says: I understand this solution well enough to defend it."</p>
+        </div>
+      </div>
+    </details>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    Connect4Array &nbsp;·&nbsp; UMPIRE Framework &nbsp;·&nbsp; Live Coding Interview Guide
+  </div>
+</footer>
+
+<script>
+  const phases = ['U','M','P','I','R','E'];
+  const ids    = ['pu','pm','pp','pi','pr','pe'];
+  const links  = {};
+  phases.forEach((p,i) => { links[p] = document.querySelector(`.pp[data-p="${p}"]`); });
+
+  const obs = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      const idx = ids.indexOf(e.target.id);
+      if (e.isIntersecting && idx !== -1) {
+        phases.forEach(p => links[p].classList.remove('active'));
+        links[phases[idx]].classList.add('active');
+      }
+    });
+  }, { threshold: 0.15, rootMargin: '-55px 0px -45% 0px' });
+
+  ids.forEach(id => { const el = document.getElementById(id); if (el) obs.observe(el); });
+</script>
+
+</body>
+</html>
