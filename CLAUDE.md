@@ -87,8 +87,5 @@ Leave the method body returning the zero-value for its type (`return false;`, `r
 ---
 
 ## Running Tests
-```bash
-mvn test                          # all tests
-mvn test -Dtest=ClassName         # single class
-mvn test -Dtest=ClassName#test    # single method
-```
+Maven isn't discoverable from the sandbox. User needs to run the test with `mvn test -Dtest={ProblemName}Test` from the devcontainer.
+
