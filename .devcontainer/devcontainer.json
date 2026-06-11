@@ -7,9 +7,14 @@
 			"VARIANT": "21",
 			// Options
 			"INSTALL_MAVEN": "true",
-			"INSTALL_GRADLE": "false",
-			"INSTALL_NODE": "false",
-			"NODE_VERSION": "lts/*"
+			"INSTALL_GRADLE": "false"
+		}
+	},
+
+	// Add Node.js so npm-based tools (e.g. Claude Code) can be installed.
+	"features": {
+		"ghcr.io/devcontainers/features/node:1": {
+			"version": "lts"
 		}
 	},
 
@@ -22,14 +27,15 @@
 	
 	// Add the IDs of extensions you want installed when the container is created.
 	"extensions": [
-		"vscjava.vscode-java-pack"
+		"vscjava.vscode-java-pack",
+		"anthropic.claude-code"
 	],
 
 	// Use 'forwardPorts' to make a list of ports inside the container available locally.
 	// "forwardPorts": [],
 
 	// Use 'postCreateCommand' to run commands after the container is created.
-	"postCreateCommand": "java -version",
+	"postCreateCommand": "java -version && npm install -g @anthropic-ai/claude-code",
 
 	// Uncomment to connect as a non-root user. See https://aka.ms/vscode-remote/containers/non-root.
 	"remoteUser": "vscode"
