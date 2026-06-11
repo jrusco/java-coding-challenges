@@ -8,7 +8,13 @@ import java.util.Map;
 
 import org.junit.Test;
 
-//https://leetcode.com/problems/first-unique-character-in-a-string/
+/**
+ * https://leetcode.com/problems/first-unique-character-in-a-string/
+ * 
+ * Given a string s, find the first non-repeating character in it and return its
+ * index. If it does not exist, return -1.
+ * 
+ */
 public class FirstUniqueCharacterInStringTest {
     
     @Test
@@ -18,7 +24,23 @@ public class FirstUniqueCharacterInStringTest {
         assertEquals(3, firstUniqChar("asdfasdk"));
     }
 
+
     public int firstUniqChar(String s) {
+        char[] freq = new char[26];
+        for (char c: s.toCharArray()) freq[c - 'a']++;
+
+        for (int i = 0; i < s.length(); i++) {
+            int letter = s.charAt(i) - 'a';
+            if (freq[letter] == 1){
+                return i;
+            }
+        }
+
+        return -1;
+    }
+
+    //original approach
+    public int firstUniqChar1(String s) {
         Map<Character, Integer> charCountMap = new LinkedHashMap<>();
         Map<Character, Integer> charFirstIndexMap = new HashMap<>();
         
